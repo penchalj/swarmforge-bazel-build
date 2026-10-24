@@ -1,6 +1,6 @@
 # Pinned build environment: same image for laptops and CI, amd64 and arm64.
 # The digest is a multi-arch index; Docker picks the right variant per machine.
-FROM ubuntu:24.04@sha256:534baea6a22c03a63003dbc8dbe78fe34bc0d7e595d9a9dc9834884ff530eb55
+FROM ubuntu:24.04@sha256:68ee22004a9109b44973313b02ff7b1de250f1de0f5ecb628d73f579aaff33ac
 
 # libc6-dev + libgcc-13-dev = the target system's C library headers and startup
 # files (the "sysroot"). The compiler itself comes from Bazel's pinned LLVM.
