@@ -85,7 +85,7 @@ jobs:
           FUSION_IMAGE: swarmforge/fusion-node:ci
         run: ./scripts/compose_test.sh
 
-      - name: SBOM (fusion-node)
+      - name: SBOM SPDX (fusion-node)
         uses: anchore/sbom-action@v0
         with:
           image: swarmforge/fusion-node:ci
@@ -93,13 +93,40 @@ jobs:
           output-file: sbom-fusion-node-${{ matrix.arch }}.spdx.json
           upload-artifact: false
 
-      - name: SBOM (detector)
+      - name: SBOM SPDX (detector)
         uses: anchore/sbom-action@v0
         with:
           image: swarmforge/detector:ci
           format: spdx-json
           output-file: sbom-detector-${{ matrix.arch }}.spdx.json
           upload-artifact: false
+
+      - name: SBOM CycloneDX (fusion-node)
+        uses: anchore/sbom-action@v0
+        with:
+          image: swarmforge/fusion-node:ci
+          format: cyclonedx-json
+          output-file: sbom-fusion-node-${{ matrix.arch }}.cdx.json
+          upload-artifact: false
+
+      - name: SBOM CycloneDX (detector)
+        uses: anchore/sbom-action@v0
+        with:
+          image: swarmforge/detector:ci
+          format: cyclonedx-json
+          output-file: sbom-detector-${{ matrix.arch }}.cdx.json
+          upload-artifact: false
+
+      - name: Validate SBOM files
+        run: |
+          for f in sbom-*.spdx.json; do
+            jq -e '.spdxVersion and (.packages | length > 0)' "$f" >/dev/null \
+              || { echo "::error::invalid SPDX SBOM: $f"; exit 1; }
+          done
+          for f in sbom-*.cdx.json; do
+            jq -e '.bomFormat == "CycloneDX" and (.components | length > 0)' "$f" >/dev/null \
+              || { echo "::error::invalid CycloneDX SBOM: $f"; exit 1; }
+          done
 
       - name: Vulnerability scan, fail on critical (fusion-node)
         uses: anchore/scan-action@v7
@@ -120,7 +147,9 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: sbom-${{ matrix.arch }}
-          path: sbom-*.spdx.json
+          path: |
+            sbom-*.spdx.json
+            sbom-*.cdx.json
           retention-days: 30
 
       # ---- main only: push architecture-specific tags ----
