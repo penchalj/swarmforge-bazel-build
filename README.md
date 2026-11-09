@@ -1,8 +1,8 @@
 # SwarmForge
 
-[![CI](https://github.com/penchalj/swarmforge/actions/workflows/ci.yml/badge.svg)](https://github.com/penchalj/swarmforge/actions/workflows/ci.yml)
-[![Images](https://github.com/penchalj/swarmforge/actions/workflows/images.yml/badge.svg)](https://github.com/penchalj/swarmforge/actions/workflows/images.yml)
-[![Release](https://img.shields.io/github/v/release/penchalj/swarmforge)](https://github.com/penchalj/swarmforge/releases)
+[![CI](https://github.com/penchalj/swarmforge-bazel-build/actions/workflows/ci.yml/badge.svg)](https://github.com/penchalj/swarmforge-bazel-build/actions/workflows/ci.yml)
+[![Images](https://github.com/penchalj/swarmforge-bazel-build/actions/workflows/images.yml/badge.svg)](https://github.com/penchalj/swarmforge-bazel-build/actions/workflows/images.yml)
+[![Release](https://img.shields.io/github/v/release/penchalj/swarmforge-bazel-build)](https://github.com/penchalj/swarmforge-bazel-build/releases)
 
 **A reproducible build, CI/CD and release platform for a C++/Python autonomy stack:
 from developer laptop to signed, multi-arch release, promoted dev → staging → production.**
@@ -93,7 +93,7 @@ them dev → staging → production by digest.
 | **Maintenance** | Dependabot for actions and base-image digests, Conventional PR title check |
 | **Documentation** | 6 Architecture Decision Records, Failure Lab with 11 real failures, measured timings, release drill |
 
-Released versions: [v0.1.0 and v0.1.1](https://github.com/penchalj/swarmforge/releases), each with changelog, 4 SBOMs and a release manifest.
+Released versions: [v0.1.0 and v0.1.1](https://github.com/penchalj/swarmforge-bazel-build/releases), each with changelog, 4 SBOMs and a release manifest.
 
 ## How I built it
 
@@ -174,7 +174,7 @@ Working principles throughout:
 Requirements: Docker with Compose, Python 3, and [cosign](https://docs.sigstore.dev/cosign/system_config/installation/) for the signature check.
 
 ```bash
-git clone https://github.com/penchalj/swarmforge && cd swarmforge
+git clone https://github.com/penchalj/swarmforge-bazel-build && cd swarmforge-bazel-build
 python3 tools/forge/forge.py doctor        # checks your machine, explains fixes
 ./scripts/dev.sh bazel test //...          # builds and tests in the pinned image
 ./scripts/dev.sh ./scripts/lint.sh         # the same lint CI runs
