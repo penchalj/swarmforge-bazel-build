@@ -128,6 +128,14 @@ jobs:
               || { echo "::error::invalid CycloneDX SBOM: $f"; exit 1; }
           done
 
+      # Required gate: runs before anything is pushed, so a licence violation
+      # can never be published. Policy: licence-policy.json, ADR 0007.
+      - name: Licence policy (fail on denied licences)
+        run: |
+          python3 tools/licence/licence_check.py --policy licence-policy.json \
+            sbom-fusion-node-${{ matrix.arch }}.cdx.json \
+            sbom-detector-${{ matrix.arch }}.cdx.json
+
       - name: Vulnerability scan, fail on critical (fusion-node)
         uses: anchore/scan-action@v7
         with:
