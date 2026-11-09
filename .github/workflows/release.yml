@@ -73,4 +73,5 @@ jobs:
             --json databaseId,conclusion \
             -q '[.[] | select(.conclusion == "success")][0].databaseId')"
           gh run download "$run_id" --dir sboms --pattern 'sbom-*'
-          gh release upload "$VERSION" sboms/*/*.spdx.json release-manifest.json --clobber
+          gh release upload "$VERSION" sboms/*/*.spdx.json sboms/*/*.cdx.json \
+            release-manifest.json --clobber
