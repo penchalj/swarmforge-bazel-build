@@ -144,7 +144,11 @@ jobs:
           severity-cutoff: critical
           output-format: table
 
-      - uses: actions/upload-artifact@v7
+      # Upload the SBOMs even when a scan above fails, so the failure can be
+      # inspected. The push steps below still run only if every step passed.
+      - name: Upload SBOMs
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
         with:
           name: sbom-${{ matrix.arch }}
           path: |
