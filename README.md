@@ -203,8 +203,8 @@ Planned next steps, in rough priority order:
 
 | Area | Next step |
 |------|-----------|
-| **Deployment targets** | k3s cluster with Argo CD (GitOps) and Ansible for on-prem hosts, consuming the environment tags |
-| **Embedded / edge** | Yocto layer for the edge image; its SDK provides the arm64 sysroot for true cross-compilation; signed over-the-air updates |
+| **Edge devices** | Yocto layer for the edge image (its SDK provides the arm64 sysroot for true cross-compilation); signed over-the-air updates with A/B partitions and automatic rollback |
+| **On-prem and cloud** | Ansible to deploy the signed images to on-prem Linux hosts; k3s with Argo CD only for server-side services that run as containers |
 | **Reproducibility** | Reproducible image builds (`SOURCE_DATE_EPOCH`), so unchanged content keeps its digest |
 | **CI performance** | Shared remote cache (bazel-remote or BuildBuddy); automatic cleanup of outdated Actions caches |
 | **Observability** | CI metrics (durations, cache hit rate, flaky tests) and DORA metrics on a Grafana dashboard |
@@ -212,6 +212,8 @@ Planned next steps, in rough priority order:
 | **Portability** | GitLab CI version of the pipeline, to show the design is not tied to one CI vendor |
 | **Supply chain** | Bazel-level SBOM covering libraries statically linked into the C++ binary |
 | **Debugging** | Symbolized ASan stack traces (`llvm-symbolizer`) |
+
+Delivery principle: one signed release, different delivery per target. Edge devices receive a Yocto image through signed A/B over-the-air updates; servers receive the same signed artefacts through Ansible or GitOps. All targets consume the same digest promoted dev → staging → production.
 
 ## Repository layout
 
