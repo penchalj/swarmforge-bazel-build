@@ -13,8 +13,13 @@ it was built by this repository's CI, unchanged.
    rules_oci was considered, but an arm64 image built on x86 needs
    cross-compilation (postponed, see ADR 0004).
 3. **Compose integration test** runs the real images together on every PR.
-4. **SBOM with Syft (SPDX JSON)** for every image and architecture, kept as
-   CI artefacts.
+4. **SBOM with Syft in two formats, SPDX JSON and CycloneDX JSON**, for every
+   image and architecture, kept as CI artefacts and attached to each release.
+   SPDX is the ISO/IEC 5962 standard often asked for in licence compliance;
+   CycloneDX is the format most vulnerability and dependency tools (for
+   example Dependency-Track) import. Producing both costs seconds and lets each
+   consumer use its own tooling. A CI step checks that every SBOM is valid and
+   not empty.
 5. **Grype gate:** any critical vulnerability fails the build.
 6. **Push only from main; sign only digests.** cosign keyless signing with the
    workflow's GitHub OIDC identity; the signature is verified in the same job.
