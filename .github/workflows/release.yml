@@ -22,7 +22,7 @@ jobs:
       # A personal token, so that CI runs on the release PR (PRs opened with
       # GITHUB_TOKEN do not trigger workflows, and main requires green checks).
       - id: rp
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           config-file: release-please-config.json
