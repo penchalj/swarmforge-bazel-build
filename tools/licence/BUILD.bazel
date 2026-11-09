@@ -1,0 +1,19 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
+
+py_library(
+    name = "licence_check_lib",
+    srcs = ["licence_check.py"],
+)
+
+py_binary(
+    name = "licence_check",
+    srcs = ["licence_check.py"],
+    main = "licence_check.py",
+)
+
+py_test(
+    name = "licence_check_test",
+    size = "small",
+    srcs = ["licence_check_test.py"],
+    deps = [":licence_check_lib"],
+)

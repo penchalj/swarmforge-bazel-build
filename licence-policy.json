@@ -1,0 +1,15 @@
+{
+  "_comment": "Licence policy for shipped images. See docs/adr/0007-licence-policy.md. Patterns are SPDX ids; a trailing * matches any suffix (GPL-3.0* matches GPL-3.0-only and GPL-3.0-or-later).",
+  "base_layer_types": ["deb", "apk", "rpm", "binary"],
+  "deny_everywhere": ["AGPL-*", "SSPL-*", "BUSL-*", "Commons-Clause"],
+  "deny_in_application": ["GPL-*", "AGPL-*", "SSPL-*", "BUSL-*", "CC-BY-NC-*"],
+  "review_in_application": ["LGPL-*", "MPL-*", "EPL-*", "CDDL-*"],
+  "require_known_licence_in_application": true,
+  "exceptions": [
+    {
+      "purl_prefix": "pkg:example/placeholder",
+      "reason": "Template entry. Each real exception needs a purl prefix, a reason and an approver.",
+      "approved_by": "nobody"
+    }
+  ]
+}

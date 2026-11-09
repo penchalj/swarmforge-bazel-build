@@ -61,7 +61,7 @@ All numbers are measured on this repository ([details](docs/performance/ci-timin
 flowchart LR
   dev["Developer workstation<br/>devcontainer = CI image<br/>forge doctor"] --> pr["Pull request<br/>Conventional title"]
   pr --> ci["CI<br/>lint, affected tests,<br/>ASan, UBSan, arm64, QEMU"]
-  pr --> img["Images<br/>release-build tests, Compose test,<br/>SBOM SPDX + CycloneDX, CVE gate"]
+  pr --> img["Images<br/>release-build tests, Compose test,<br/>SBOM SPDX + CycloneDX,<br/>licence policy, CVE gate"]
   ci --> main["main<br/>protected, 9 required checks"]
   img --> main
   main --> pub["Publish<br/>multi-arch images,<br/>cosign keyless signature"]
@@ -87,11 +87,11 @@ them dev → staging → production by digest.
 | **Developer environment** | One command to build anywhere (`scripts/dev.sh`), devcontainer, `forge doctor` machine checks |
 | **CI** | GitHub Actions with lint, affected-test selection, Bazel caching (written only by `main`), 9 required checks |
 | **Deep checks** | ASan and UBSan on every PR with canaries, native arm64 build and test, arm64 binary run under QEMU |
-| **Artefacts** | Minimal non-root runtime images for amd64 and arm64, SBOMs (SPDX + CycloneDX), critical-CVE gate, cosign keyless signatures |
+| **Artefacts** | Minimal non-root runtime images for amd64 and arm64, SBOMs (SPDX + CycloneDX), licence policy gate, critical-CVE gate, cosign keyless signatures |
 | **Releases** | release-please versions and changelogs, releases only from fully green commits, build once |
 | **Environments** | dev → staging → production by digest, order enforced, production approval, one-command rollback |
 | **Maintenance** | Dependabot for actions and base-image digests, Conventional PR title check |
-| **Documentation** | 6 Architecture Decision Records, Failure Lab with 11 real failures, measured timings, release drill |
+| **Documentation** | 7 Architecture Decision Records, Failure Lab with 11 real failures, measured timings, release drill |
 
 Released versions: [v0.1.0 and v0.1.1](https://github.com/penchalj/swarmforge-bazel-build/releases), each with changelog, SBOMs and a release manifest. From the next release on, every release carries 8 SBOMs: SPDX and CycloneDX for each image and architecture.
 
@@ -146,6 +146,7 @@ Working principles throughout:
 | Multi-arch | **Docker Buildx** | Builds images and combines architectures under one tag |
 | Supply chain | **GitHub Container Registry (GHCR)** | Stores the published images |
 | Supply chain | **Syft** | Generates SBOMs in SPDX and CycloneDX formats for every image and architecture |
+| Supply chain | **licence_check** (own Python tool) | Checks every CycloneDX SBOM against [licence-policy.json](licence-policy.json); copyleft in application code or AGPL anywhere fails the build |
 | Supply chain | **Grype** | Scans images for known vulnerabilities; fails on critical |
 | Supply chain | **cosign / Sigstore** | Keyless signing, recorded in a public transparency log |
 | Release | **release-please** | Versions and changelogs from Conventional Commits |
@@ -163,11 +164,11 @@ Working principles throughout:
 | Reproducible developer and test environments | [Pinned build image](docker/dev.Dockerfile) used by laptop, [devcontainer](.devcontainer/devcontainer.json) and CI |
 | Compiled software, ideally C++ | C++20 [Kalman tracker](libtrack), [fusion-node](fusion-node), ASan/UBSan with [canary tests](libtrack/test/sanitizer_canary_test.cc) |
 | Cross-architecture and edge delivery | Native arm64 build and test, arm64 binary run under QEMU ([ADR 0004](docs/adr/0004-full-lane-sanitizers-arm64.md)) |
-| Secrets, quality gates, release integrity | Cosign keyless (no long-lived keys), SPDX and CycloneDX SBOMs, CVE gate, least-privilege tokens ([ADR 0005](docs/adr/0005-release-images-sbom-signing.md)) |
+| Secrets, quality gates, release integrity | Cosign keyless (no long-lived keys), SPDX and CycloneDX SBOMs, licence policy gate ([ADR 0007](docs/adr/0007-licence-policy.md)), CVE gate, least-privilege tokens ([ADR 0005](docs/adr/0005-release-images-sbom-signing.md)) |
 | Release automation, environment promotion | release-please, build once / promote by digest, approval, rollback ([ADR 0006](docs/adr/0006-releases-and-promotion.md), [drill](docs/releases/rollback-drill.md)) |
 | Internal tooling in Python and Bash | [forge doctor](tools/forge/forge.py) (tested), [scripts](scripts) checked by shellcheck |
 | Debug difficult build and deployment failures | [Failure Lab](docs/failure-lab/README.md): 11 real failures with root cause and prevention |
-| Make and defend trade-offs | [Architecture Decision Records](docs/adr) 0001–0006 |
+| Make and defend trade-offs | [Architecture Decision Records](docs/adr) 0001–0007 |
 
 ## Try it in 5 minutes
 
@@ -221,6 +222,7 @@ detector/          Python synthetic sensor
 proto/             Shared Protobuf contract (C++ and Python)
 tests/             End-to-end and Compose integration tests
 tools/forge/       Developer tooling (forge doctor)
+tools/licence/     Licence policy check for SBOMs (+ tests)
 docker/            Pinned build image and minimal runtime images
 scripts/           Build, lint, package, release and promotion scripts
 .github/workflows/ CI, Images, Release, Promote, PR title
